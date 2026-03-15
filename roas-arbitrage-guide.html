@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Ads 培训课程 - ROAS与搜索套利指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        :root {
+            --primary: #4285F4;
+            --secondary: #34A853;
+            --accent: #FBBC05;
+            --danger: #EA4335;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --text: #333;
+            --text-light: #666;
+        }
+        
+        body { 
+            font-family: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+        }
+        
+        /* 顶部导航栏 */
+        .top-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.2);
+        }
+        
+        .nav-logo { 
+            color: #fff; 
+            font-size: 1.1em; 
+            font-weight: 500; 
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-logo:hover { opacity: 0.8; }
+        
+        .nav-links { 
+            display: flex; 
+            gap: 25px; 
+        }
+        
+        .nav-links a { 
+            color: rgba(255,255,255,0.8); 
+            text-decoration: none; 
+            font-size: 0.9em; 
+            transition: color 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .nav-links a:hover { 
+            color: #fff; 
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-links a.active { 
+            color: var(--accent); 
+            font-weight: 500;
+            background: rgba(251, 188, 5, 0.1);
+        }
+        
+        /* 浮动导航按钮 */
+        .float-nav-toggle {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(66, 133, 244, 0.4);
+            transition: all 0.3s ease;
+            color: #fff;
+            font-size: 1.3em;
+        }
+        
+        .float-nav-toggle:hover { 
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 6px 20px rgba(66, 133, 244, 0.6);
+        }
+        
+        /* 侧边导航栏 */
+        .side-nav {
+            position: fixed;
+            right: -320px;
+            top: 0;
+            width: 320px;
+            height: 100vh;
+            background: #fff;
+            z-index: 1001;
+            transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: -5px 0 30px rgba(0,0,0,0.15);
+            overflow-y: auto;
+        }
+        
+        .side-nav.open { right: 0; }
+        
+        .side-nav-header { 
+            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
+            padding: 25px; 
+            color: #fff;
+            position: relative;
+        }
+        
+        .side-nav-header h3 { 
+            font-size: 1.2em; 
+            margin-bottom: 5px;
+        }
+        
+        .side-nav-header p { 
+            opacity: 0.9; 
+            font-size: 0.9em;
+        }
+        
+        .side-nav-close { 
+            position: absolute; 
+            top: 15px; 
+            right: 15px; 
+            background: rgba(255,255,255,0.2); 
+            border: none; 
+            color: #fff; 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            cursor: pointer; 
+            font-size: 1.2em;
+            transition: background 0.3s;
+        }
+        
+        .side-nav-close:hover { 
+            background: rgba(255,255,255,0.3); 
+        }
+        
+        .side-nav-content { 
+            padding: 10px 0; 
+        }
+        
+        .side-nav-item { 
+            display: block; 
+            padding: 12px 25px; 
+            color: var(--text); 
+            text-decoration: none; 
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+        
+        .side-nav-item:hover { 
+            background: var(--light); 
+            border-left-color: var(--primary);
+            padding-left: 30px;
+        }
+        
+        /* 遮罩层 */
+        .overlay {
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            right: 0; 
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .overlay.show { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+        
+        /* 主内容区 */
+        .main-content { 
+            padding: 80px 20px 40px; 
+        }
+        
+        .container { 
+            max-width: 900px; 
+            margin: 0 auto; 
+            background: #fff; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); 
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+        }
+        
+        @keyframes fadeInUp { 
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            } 
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            } 
+        }
+        
+        /* 页头 */
+        header { 
+            background: linear-gradient(135deg, #4285F4 0%, #34A853 50%, #FBBC05 100%); 
+            color: white; 
+            padding: 50px 30px; 
+            text-align: center; 
+        }
+        
+        header h1 { 
+            font-size: 2em; 
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        header p { 
+            opacity: 0.95; 
+            font-size: 1.05em;
+        }
+        
+        /* 内容区 */
+        .content { 
+            padding: 35px 40px; 
+        }
+        
+        h2 { 
+            color: var(--primary); 
+            font-size: 1.4em; 
+            margin: 35px 0 20px; 
+            padding-bottom: 12px; 
+            border-bottom: 2px solid #eee;
+            font-weight: 600;
+        }
+        
+        h2:first-child { 
+            margin-top: 0; 
+        }
+        
+        h3 { 
+            color: var(--secondary); 
+            font-size: 1.15em; 
+            margin: 25px 0 12px;
+            font-weight: 600;
+        }
+        
+        p { 
+            margin: 12px 0; 
+            line-height: 1.8;
+        }
+        
+        /* 表格样式 */
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 20px 0; 
+            font-size: 0.95em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        th, td { 
+            padding: 14px 16px; 
+            text-align: left; 
+        }
+        
+        th { 
+            background: var(--light); 
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        tr:nth-child(even) { 
+            background: #fafafa; 
+        }
+        
+        tr:hover { 
+            background: #f0f7ff; 
+        }
+        
+        /* 列表样式 */
+        ul, ol { 
+            margin: 15px 0; 
+            padding-left: 25px; 
+            line-height: 1.9; 
+        }
+        
+        li { 
+            margin: 8px 0; 
+        }
+        
+        li strong { 
+            color: var(--primary); 
+        }
+        
+        /* 提示框样式 */
+        .note { 
+            background: linear-gradient(135deg, rgba(66,133,244,0.1), rgba(52,168,83,0.1)); 
+            border-left: 4px solid var(--primary); 
+            padding: 20px; 
+            margin: 25px 0; 
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .note strong { 
+            color: var(--primary); 
+        }
+        
+        .highlight { 
+            background: linear-gradient(135deg, rgba(251,188,5,0.15), rgba(251,188,5,0.05)); 
+            border-left: 4px solid var(--accent); 
+            padding: 20px; 
+            margin: 25px 0; 
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .highlight strong { 
+            color: var(--accent); 
+        }
+        
+        .tip { 
+            background: linear-gradient(135deg, rgba(52,168,83,0.15), rgba(52,168,83,0.05)); 
+            border-left: 4px solid var(--secondary); 
+            padding: 20px; 
+            margin: 25px 0; 
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .tip strong { 
+            color: var(--secondary); 
+        }
+        
+        .warning { 
+            background: linear-gradient(135deg, rgba(234,67,53,0.15), rgba(234,67,53,0.05)); 
+            border-left: 4px solid var(--danger); 
+            padding: 20px; 
+            margin: 25px 0; 
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .warning strong { 
+            color: var(--danger); 
+        }
+        
+        /* 公式框 */
+        .formula { 
+            background: linear-gradient(135deg, var(--dark), #2d2d44); 
+            color: #fff; 
+            padding: 25px; 
+            margin: 25px 0; 
+            border-radius: 10px; 
+            text-align: center; 
+            font-size: 1.15em; 
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .formula span { 
+            color: var(--accent); 
+            font-weight: bold; 
+        }
+        
+        /* 页脚 */
+        footer { 
+            text-align: center; 
+            padding: 25px; 
+            color: var(--text-light); 
+            font-size: 0.9em; 
+            border-top: 1px solid #eee;
+            background: var(--light);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .top-nav { 
+                padding: 0 15px; 
+            }
+            
+            .nav-links { 
+                display: none; 
+            }
+            
+            .content { 
+                padding: 25px 20px; 
+            }
+            
+            header h1 { 
+                font-size: 1.5em; 
+            }
+            
+            header { 
+                padding: 35px 20px; 
+            }
+            
+            table { 
+                font-size: 0.85em; 
+            }
+            
+            th, td { 
+                padding: 10px 12px; 
+            }
+            
+            .formula { 
+                font-size: 1em; 
+                padding: 20px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <nav class="top-nav">
+        <a href="index.html" class="nav-logo">📚 Google Ads 培训课程</a>
+        <div class="nav-links">
+            <a href="index.html">课程大纲</a>
+            <a href="googleadstype.html">账户类型</a>
+            <a href="roas-arbitrage-guide.html" class="active">ROAS套利</a>
+        </div>
+    </nav>
+    
+    <!-- 浮动导航按钮 -->
+    <div class="float-nav-toggle" onclick="toggleSideNav()">☰</div>
+    
+    <!-- 遮罩层 -->
+    <div class="overlay" onclick="closeSideNav()"></div>
+    
+    <!-- 侧边导航 -->
+    <div class="side-nav">
+        <button class="side-nav-close" onclick="closeSideNav()">×</button>
+        <div class="side-nav-header">
+            <h3>📋 章节导航</h3>
+            <p>ROAS与套利完全指南</p>
+        </div>
+        <div class="side-nav-content">
+            <a href="#section-1" class="side-nav-item">1. 什么是 ROAS</a>
+            <a href="#section-2" class="side-nav-item">2. ROAS vs ROI vs ROE</a>
+            <a href="#section-3" class="side-nav-item">3. ROAS 计算实战</a>
+            <a href="#section-4" class="side-nav-item">4. 搜索套利介绍</a>
+            <a href="#section-5" class="side-nav-item">5. 套利工作流程</a>
+            <a href="#section-6" class="side-nav-item">6. 套利关键指标</a>
+            <a href="#section-7" class="side-nav-item">7. 风险与挑战</a>
+            <a href="#section-8" class="side-nav-item">8. 如何提升 ROAS</a>
+            <a href="#section-9" class="side-nav-item">9. 优化检查清单</a>
+            <a href="#section-10" class="side-nav-item">10. 行业基准参考</a>
+        </div>
+    </div>
+    
+    <!-- JavaScript -->
+    <script>
+        function toggleSideNav() {
+            document.querySelector('.side-nav').classList.toggle('open');
+            document.querySelector('.overlay').classList.toggle('show');
+        }
+        
+        function closeSideNav() {
+            document.querySelector('.side-nav').classList.remove('open');
+            document.querySelector('.overlay').classList.remove('show');
+        }
+        
+        // 点击侧边导航链接后自动关闭
+        document.querySelectorAll('.side-nav-item').forEach(item => {
+            item.addEventListener('click', closeSideNav);
+        });
+    </script>
+
+    <!-- 主内容 -->
+    <div class="main-content">
+        <div class="container">
+            <header>
+                <h1>📊 ROAS 与搜索套利完全指南</h1>
+                <p>广告投放回报率优化与搜索套利实战手册</p>
+            </header>
+            
+            <div class="content">
+                <h2 id="section-1">📈 什么是 ROAS？</h2>
+                <p>ROAS（Return on Ad Spend，广告支出回报率）是衡量广告投放效果的核心指标，表示每花费1元广告费能带来多少收入。</p>
+                
+                <div class="formula">
+                    ROAS = <span>广告收入</span> ÷ <span>广告支出</span> × 100%
+                </div>
+                
+                <table>
+                    <tr>
+                        <th>ROAS 值</th>
+                        <th>效果评价</th>
+                        <th>说明</th>
+                    </tr>
+                    <tr>
+                        <td>ROAS ≥ 4</td>
+                        <td>优秀 🎯</td>
+                        <td>每投1元赚3元以上，利润可观</td>
+                    </tr>
+                    <tr>
+                        <td>ROAS = 3</td>
+                        <td>良好 ✅</td>
+                        <td>盈亏平衡点附近，健康运营</td>
+                    </tr>
+                    <tr>
+                        <td>ROAS = 2</td>
+                        <td>一般 ⚠️</td>
+                        <td>勉强覆盖成本，需优化</td>
+                    </tr>
+                    <tr>
+                        <td>ROAS < 2</td>
+                        <td>危险 ❌</td>
+                        <td>亏损状态，必须立即优化</td>
+                    </tr>
+                    <tr>
+                        <td>ROAS = 1</td>
+                        <td>保本 📊</td>
+                        <td>刚好覆盖广告成本，无利润</td>
+                    </tr>
+                </table>
+
+                <h2 id="section-2">🔄 ROAS vs ROI vs ROE</h2>
+                <table>
+                    <tr>
+                        <th>指标</th>
+                        <th>全称</th>
+                        <th>计算公式</th>
+                        <th>侧重点</th>
+                    </tr>
+                    <tr>
+                        <td><strong>ROAS</strong></td>
+                        <td>Return on Ad Spend</td>
+                        <td>广告收入 ÷ 广告支出</td>
+                        <td>广告投放的直接效果</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ROI</strong></td>
+                        <td>Return on Investment</td>
+                        <td>(收入-成本) ÷ 总投资</td>
+                        <td>整体投资回报（含所有成本）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ROE</strong></td>
+                        <td>Return on Equity</td>
+                        <td>净利润 ÷ 股东权益</td>
+                        <td>股东投资回报</td>
+                    </tr>
+                </table>
+                
+                <div class="tip">
+                    <strong>💡 提示：</strong>ROAS 只考虑广告支出，不包含产品成本、运费、人力等运营成本。判断真实利润需用 ROI。
+                </div>
+
+                <h2 id="section-3">🎯 ROAS 计算实战</h2>
+                
+                <h3>示例1：电商广告</h3>
+                <ul>
+                    <li>广告花费：¥10,000</li>
+                    <li>广告带来销售额：¥45,000</li>
+                    <li>ROAS = 45,000 ÷ 10,000 = <strong>4.5</strong> (450%)</li>
+                    <li>含义：每投1元带来4.5元收入</li>
+                </ul>
+                
+                <h3>示例2：SaaS 产品</h3>
+                <ul>
+                    <li>广告花费：¥5,000</li>
+                    <li>广告带来 LTV（客户终身价值）：¥20,000</li>
+                    <li>ROAS = 20,000 ÷ 5,000 = <strong>4</strong> (400%)</li>
+                </ul>
+
+                <h2 id="section-4">💰 搜索套利（Search Arbitrage）是什么？</h2>
+                <p>搜索套利是一种利用广告平台价格差异获取利润的策略：<strong>低价购买流量 → 高价转售给广告主</strong></p>
+                
+                <div class="formula">
+                    套利利润 = <span>广告主支付费用</span> - <span>流量采购成本</span> - <span>运营成本</span>
+                </div>
+                
+                <h3>搜索套利模式</h3>
+                <table>
+                    <tr>
+                        <th>模式</th>
+                        <th>说明</th>
+                        <th>盈利方式</th>
+                    </tr>
+                    <tr>
+                        <td><strong>流量转售</strong></td>
+                        <td>从 AdSense/联盟采购低价流量，通过 Google Ads 投放给广告主</td>
+                        <td>赚取差价</td>
+                    </tr>
+                    <tr>
+                        <td><strong>内容网站套利</strong></td>
+                        <td>创建内容网站，通过 SEO/广告获取自然流量，再投放广告主广告</td>
+                        <td>流量增值</td>
+                    </tr>
+                    <tr>
+                        <td><strong>电商套利</strong></td>
+                        <td>从其他平台采购低价商品，在亚马逊高价销售</td>
+                        <td>商品价差</td>
+                    </tr>
+                    <tr>
+                        <td><strong>域名套利</strong></td>
+                        <td>购买高搜索量域名，建站后通过广告变现</td>
+                        <td>流量变现</td>
+                    </tr>
+                </table>
+
+                <h2 id="section-5">🔍 搜索套利工作流程</h2>
+                <ol>
+                    <li><strong>市场调研</strong>：找到高需求、低竞争的长尾关键词</li>
+                    <li><strong>流量采购</strong>：通过 AdSense、联盟计划采购低价搜索流量</li>
+                    <li><strong>页面优化</strong>：创建高转化落地页，引导用户点击广告</li>
+                    <li><strong>广告投放</strong>：在 Google Ads 投放广告主的广告</li>
+                    <li><strong>收益结算</strong>：从广告主获取收入，扣除成本后获利</li>
+                </ol>
+
+                <h2 id="section-6">📊 套利关键指标</h2>
+                <table>
+                    <tr>
+                        <th>指标</th>
+                        <th>说明</th>
+                        <th>参考值</th>
+                    </tr>
+                    <tr>
+                        <td>EPC</td>
+                        <td>每点击收入 (Earnings Per Click)</td>
+                        <td>> $0.50</td>
+                    </tr>
+                    <tr>
+                        <td>CPC</td>
+                        <td>每点击成本</td>
+                        <td>< EPC</td>
+                    </tr>
+                    <tr>
+                        <td>Margin</td>
+                        <td>利润率 = (EPC - CPC) / EPC</td>
+                        <td>> 20%</td>
+                    </tr>
+                    <tr>
+                        <td>CR</td>
+                        <td>页面转化率</td>
+                        <td>> 3%</td>
+                    </tr>
+                </table>
+
+                <h2 id="section-7">⚠️ 搜索套利风险与挑战</h2>
+                <ul>
+                    <li><strong>平台政策风险</strong>：Google 对套利行为审查严格，可能封账户</li>
+                    <li><strong>价格波动</strong>：广告成本波动大，利润空间不稳定</li>
+                    <li><strong>合规问题</strong>：部分套利模式可能违反广告平台规则</li>
+                    <li><strong>规模化困难</strong>：小规模可盈利，大规模易触发审核</li>
+                    <li><strong>技术门槛</strong>：需要懂广告投放、数据分析、页面优化</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>⚠️ 重要提醒：</strong>搜索套利需严格遵守 Google Ads 和 AdSense 政策，避免使用欺诈手段。部分高风险操作可能导致账户永久封禁。
+                </div>
+
+                <h2 id="section-8">🚀 如何提升 ROAS？</h2>
+                
+                <h3>1. 关键词优化</h3>
+                <ul>
+                    <li>添加高转化精准关键词，排除无效词</li>
+                    <li>使用长尾关键词降低竞争和成本</li>
+                    <li>定期分析搜索字词报告</li>
+                </ul>
+                
+                <h3>2. 广告创意优化</h3>
+                <ul>
+                    <li>A/B 测试不同广告文案</li>
+                    <li>优化标题和描述，提升 CTR</li>
+                    <li>添加附加信息提升广告展示效果</li>
+                </ul>
+                
+                <h3>3. 着陆页优化</h3>
+                <ul>
+                    <li>确保页面与广告相关性高</li>
+                    <li>优化页面加载速度</li>
+                    <li>清晰的行动号召 (CTA)</li>
+                </ul>
+                
+                <h3>4. 出价策略调整</h3>
+                <ul>
+                    <li>使用智能出价（目标 CPA/ROAS）</li>
+                    <li>根据表现调整关键词出价</li>
+                    <li>设置设备/地区/时段出价调整</li>
+                </ul>
+                
+                <h3>5. 受众定位优化</h3>
+                <ul>
+                    <li>使用再营销定位高意向用户</li>
+                    <li>创建类似受众扩大优质流量</li>
+                    <li>排除低转化受众</li>
+                </ul>
+
+                <h2 id="section-9">📋 ROAS 优化检查清单</h2>
+                <ul>
+                    <li>✅ 账户结构清晰，广告组主题明确</li>
+                    <li>✅ 关键词相关性和质量得分 > 7</li>
+                    <li>✅ 广告文案有吸引力，CTA 明确</li>
+                    <li>✅ 着陆页加载速度 < 3秒</li>
+                    <li>✅ 转化追踪设置正确</li>
+                    <li>✅ 定期排除无效搜索词</li>
+                    <li>✅ 使用 A/B 测试优化素材</li>
+                    <li>✅ 监控 ROAS 趋势，及时调整</li>
+                </ul>
+
+                <h2 id="section-10">📊 行业 ROAS 基准参考</h2>
+                <div class="highlight">
+                    <h3>各行业平均 ROAS 数据</h3>
+                    <table>
+                        <tr>
+                            <th>行业</th>
+                            <th>平均 ROAS</th>
+                            <th>说明</th>
+                        </tr>
+                        <tr>
+                            <td>电商（综合）</td>
+                            <td>2.5 - 4</td>
+                            <td>竞争激烈，需精细化运营</td>
+                        </tr>
+                        <tr>
+                            <td>DTC（直接面向消费者）</td>
+                            <td>3 - 5</td>
+                            <td>品牌溢价高，利润空间大</td>
+                        </tr>
+                        <tr>
+                            <td>SaaS</td>
+                            <td>3 - 7</td>
+                            <td>LTV 高，可接受更高获客成本</td>
+                        </tr>
+                        <tr>
+                            <td>游戏/应用</td>
+                            <td>2 - 4</td>
+                            <td>用户获取成本高</td>
+                        </tr>
+                        <tr>
+                            <td>金融/保险</td>
+                            <td>3 - 6</td>
+                            <td>单笔价值高，竞争激烈</td>
+                        </tr>
+                        <tr>
+                            <td>医疗健康</td>
+                            <td>3 - 5</td>
+                            <td>监管严，转化周期长</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="note">
+                    <strong>💡 温馨提示：</strong>ROAS 目标应根据自身业务模型、利润率和行业特点来设定。不同行业和产品的合理 ROAS 范围差异很大，建议结合实际情况制定目标。
+                </div>
+            </div>
+            
+            <footer>
+                <p>📚 Google Ads 培训课程 | 持续更新中</p>
+            </footer>
+        </div>
+    </div>
+</body>
+</html>
